@@ -16,6 +16,8 @@ class Snake():
         self.body = [[100,50],[90,50],[80,50]]
         self.direction = 4
         self.changeDirectionTo = self.direction
+        self.hasFast = False
+        self.hasSlow = False
         
         
     def changeDirTo(self, dire):
@@ -41,12 +43,22 @@ class Snake():
             self.position[1] -= 10
         if self.direction == 4:
             self.position[1] += 10
+    
         self.body.insert(0,list(self.position))
         if self.position == foodPos:
             return 1
         else:
             self.body.pop()
             return 0
+        
+     
+        
+    def lengthen(self, foodPos):
+        if self.position == foodPos:
+            print('yes')
+            self.body.insert(0,list(self.position))
+        
+        
         
     def checkCollision(self):
         if self.position[0] > 490 or self.position[0] < 0:
@@ -66,7 +78,7 @@ class Snake():
         return self.body
     
 
-class FoodSpawner():
+class FoodSpawner:
     def __init__(self):
         self.position = [random.randrange(1,50)*10, random.randrange(1,50)*10]
         self.isFoodOnScreen = True
@@ -80,6 +92,15 @@ class FoodSpawner():
     def setFoodOnScreen(self,boolean):
         self.isFoodOnScreen = boolean
         
+        
+class SpeedFood(FoodSpawner):
+     def __init__(self):
+        self.position = [random.randrange(1,50)*10, random.randrange(1,50)*10]
+        self.isFoodOnScreen = True
+    
+    
+            
+    
 '''       
 window = pygame.display.set_mode((500,500))
 pygame.display.set_caption("Snakey Snake")
