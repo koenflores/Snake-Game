@@ -1,6 +1,6 @@
 import random, pygame, sys
 from SnakeySnake import Snake, FoodSpawner, SpeedFood
-
+pygame.init()
 
 
 window = pygame.display.set_mode((500,500))
@@ -13,17 +13,37 @@ snake = Snake()
 foodSpawner = FoodSpawner()
 speedFoodSpawner = SpeedFood()
 
-
+def text_objects(text, font, color):
+    textSurface = font.render(text, True, color)
+    return textSurface, textSurface.get_rect()
+    
 
 
 def gameOver():
+    window.fill(pygame.Color(225,225,225))
+    
+    #displays game over
+    largeText = pygame.font.SysFont('comicsansms',50)
+    TextSurf, TextRect = text_objects("Game Over", largeText, (100,100,100) )
+    TextRect.center = (500/2, 500/3)
+    window.blit(TextSurf, TextRect)
+    
+    #displays score
+    largeText = pygame.font.SysFont('comicsansms',30)
+    TextSurf, TextRect = text_objects("Score: " + str(score), largeText, (100,100,100) )
+    TextRect.center = (500/2, 500/2)
+    window.blit(TextSurf, TextRect)
+    
+    pygame.display.update()
+    pygame.time.wait(4000)
+    
     pygame.display.quit()
     pygame.quit()
     sys.exit()
     
-speedFoodTimer = 0
-displaySpeedFood = 0 #counter until next speed food
-displaySpeedFoodTimer = 100 #counter 
+speedFoodTimer = 0 #how long speed lasts
+displaySpeedFood = 0 #wait time until next food
+displaySpeedFoodTimer = 200 #how long speed food on screen
    
 while True:
     
