@@ -3,6 +3,7 @@ import pygame
 import sys
 import random
 #import time
+
 '''
 left: 1
 right: 2
@@ -61,9 +62,9 @@ class Snake():
         
         
     def checkCollision(self):
-        if self.position[0] > 490 or self.position[0] < 0:
+        if self.position[0] > 455 or self.position[0] < 30:
             return 1
-        elif self.position[1] > 490 or self.position[1] < 0:
+        elif self.position[1] > 455 or self.position[1] < 30:
             return 1
         for bodyPart in self.body[1:]:
             if self.position[0] == bodyPart:
@@ -80,12 +81,12 @@ class Snake():
 
 class FoodSpawner:
     def __init__(self):
-        self.position = [random.randrange(1,50)*10, random.randrange(1,50)*10]
+        self.position = [random.randrange(4,46)*10, random.randrange(4,46)*10]
         self.isFoodOnScreen = True
         
     def spawnFood(self):
         if self.isFoodOnScreen == False:
-            self.position = [random.randrange(1,50)*10,random.randrange(1,50)*10]
+            self.position = [random.randrange(3,45)*10,random.randrange(3,45)*10]
             self.isFoodOnScreen = True
         return self.position
     
@@ -95,7 +96,7 @@ class FoodSpawner:
         
 class SpeedFood(FoodSpawner):
      def __init__(self):
-        self.position = [random.randrange(1,50)*10, random.randrange(1,50)*10]
+        self.position = [random.randrange(5,42)*10, random.randrange(5,42)*10]
         self.isFoodOnScreen = True
     
     

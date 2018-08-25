@@ -1,5 +1,6 @@
 import random, pygame, sys
 from SnakeySnake import Snake, FoodSpawner, SpeedFood
+from pygame.locals import *
 pygame.init()
 
 
@@ -8,6 +9,7 @@ pygame.display.set_caption("Snakey Snake")
 fps = pygame.time.Clock()
 
 score = 0
+howDied = ''
 
 snake = Snake()
 foodSpawner = FoodSpawner()
@@ -20,12 +22,12 @@ def text_objects(text, fonts, color):
     
 
 
-def gameOver():
+def gameOver(score, howDied):
     window.fill(pygame.Color(225,225,225))
     
     #displays game over
-    largeText = pygame.font.SysFont('comicsansms',50)
-    TextSurf, TextRect = text_objects("Game Over", largeText, (100,100,100) )
+    largeText = pygame.font.SysFont('comicsansms',45)
+    TextSurf, TextRect = text_objects("You " + howDied , largeText, (100,100,100) )
     TextRect.center = (500/2, 500/3)
     window.blit(TextSurf, TextRect)
     
@@ -36,11 +38,12 @@ def gameOver():
     window.blit(TextSurf, TextRect)
     
     pygame.display.update()
-    pygame.time.wait(4000)
+    pygame.time.wait(2000)
     
     pygame.display.quit()
     pygame.quit()
     sys.exit()
+    
     
 
 def GameIntro():
@@ -48,7 +51,6 @@ def GameIntro():
     
     while intro:
         for event in pygame.event.get():
-            print(event)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
@@ -66,7 +68,7 @@ def GameIntro():
 def button(msg, x, y, w, h, initialColor, afterColor, action=None):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
-    print(click)
+  
     
     if x+w > mouse[0] > x and y+h > mouse[1] > y:
         pygame.draw.rect(window, afterColor,(x,y,w,h))
@@ -90,7 +92,6 @@ def button(msg, x, y, w, h, initialColor, afterColor, action=None):
 def Game():
     
     score = 0
-
     snake = Snake()
     foodSpawner = FoodSpawner()
     speedFoodSpawner = SpeedFood()
@@ -99,12 +100,30 @@ def Game():
     displaySpeedFood = 0 #wait time until next food
     displaySpeedFoodTimer = 200 #how long speed food on screen
     
+    timeElapsed = 0
+    
+    ateFood = True
+     
     while True:
+        
+        dt = fps.tick()
+        
+        timeElapsed += dt
+        print(timeElapsed)
+        
+        if ateFood == True:
+            timeElapsed = 0
+            ateFood = False
+        elif ateFood == False and 3.16*timeElapsed > 158:
+            howDied = 'Died of Starvation!'
+            gameOver(score, howDied)
+            
+        
         
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                gameOver();
+                gameOver(score, howDied);
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
                     snake.changeDirTo(2)
@@ -127,12 +146,34 @@ def Game():
         if (snake.move(foodPos) == 1): #lengthens snake if moves over a regular food
             score += 1
             foodSpawner.setFoodOnScreen(False)
+            ateFood = True
             
         #print(str(displaySpeedFood) + ' displayspeedfood')   
         #print(displaySpeedFoodTimer)
         
         window.fill(pygame.Color(225,225,225))
         
+        for ii in range(30,460): # the side boundaries of the game
+            pygame.draw.rect(window, pygame.Color(0,0,0), pygame.Rect(ii,30,5,5))
+            pygame.draw.rect(window, pygame.Color(0,0,0), pygame.Rect(460,ii,5,5))
+            pygame.draw.rect(window, pygame.Color(0,0,0), pygame.Rect(ii,460,5,5))
+            pygame.draw.rect(window, pygame.Color(0,0,0), pygame.Rect(30,ii,5,5))
+            
+        for ii in range(300,460): # life timer
+            pygame.draw.rect(window, pygame.Color(0,0,0), pygame.Rect(ii,5,2,2))
+            pygame.draw.rect(window, pygame.Color(0,0,0), pygame.Rect(ii,20,2,2))
+            
+        for ii in range(5,20):
+            pygame.draw.rect(window, pygame.Color(0,0,0), pygame.Rect(300,ii,2,2))
+            pygame.draw.rect(window, pygame.Color(0,0,0), pygame.Rect(460,ii,2,2))
+            
+        pygame.draw.rect(window, pygame.Color(250,0,0), pygame.Rect(302,7.5,158-(3.16*timeElapsed),13)) #perfectly filled health bar
+        
+        #pygame.draw.rect(window, pygame.Color(250,225,225), pygame.Rect(400,7.5,60,13))
+        
+        
+            
+            
         if displaySpeedFood == 0 and not displaySpeedFoodTimer == 0:
             speedFoodPos = speedFoodSpawner.spawnFood()    
             pygame.draw.circle(window, pygame.Color(91,127,164), speedFoodPos, 8)    #position of fast food
@@ -148,7 +189,9 @@ def Game():
                         score +=3
                         randomSpeed = random.randrange(1,3)
                         speedFoodTimer = 100
+                        ateFood = True
                         break
+                    
             displaySpeedFoodTimer-=1
             if displaySpeedFoodTimer == 0:
                 displaySpeedFood = 300
@@ -166,7 +209,8 @@ def Game():
            
             
         if snake.checkCollision() == 1:
-            gameOver();
+            howDied = 'Crashed!'
+            gameOver(score, howDied);
             
         pygame.display.set_caption("Snakey Snake | Score: " + str(score))
          #refreshes 
@@ -175,21 +219,21 @@ def Game():
         if speedFoodTimer > 1:
             if randomSpeed == 1:
                 fps.tick(70)
-                print('fast')
                 speedFoodTimer-= 1
             elif randomSpeed == 2:
                 fps.tick(10)
-                print('slow')
                 speedFoodTimer-=2
         else:
             fps.tick(30)
             #ateSpeedFood = False
-            print('norman')
+            
             
         pygame.display.flip()      
         #print(len(snake.getBody()))
         #print(randomSpeed)
+        
    
+
 GameIntro()
 Game()              
 
